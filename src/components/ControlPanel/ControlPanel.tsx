@@ -3,6 +3,8 @@ import { useState } from 'react';
 import { LayoutSelector } from './LayoutSelector';
 import { MaterialSelector } from './MaterialSelector';
 import { ZoneColorPicker } from './ZoneColorPicker';
+import { ShareMenu } from '@/components/Share/ShareMenu';
+import { ImportButton } from '@/components/Share/ImportButton';
 import { KeyZone } from '@/types/keyboard';
 import { useLayout } from '@/store/useKeyboardStore';
 import { LAYOUT_CONFIGS } from '@/data/layouts';
@@ -44,6 +46,21 @@ export function ControlPanel({ selectedZone, onZoneChange }: ControlPanelProps) 
         <MaterialSelector />
         <div className="w-full h-px bg-gradient-to-r from-transparent via-gray-700/50 to-transparent" />
         <ZoneColorPicker selectedZone={selectedZone} onZoneChange={onZoneChange} />
+        <div className="w-full h-px bg-gradient-to-r from-transparent via-gray-700/50 to-transparent" />
+        <div>
+          <h3 className="text-sm font-medium text-gray-200 mb-3">分享与导入</h3>
+          <div className="flex gap-2">
+            <div className="flex-1">
+              <ShareMenu />
+            </div>
+            <div className="flex-1">
+              <ImportButton />
+            </div>
+          </div>
+          <p className="mt-2 text-xs text-gray-500 leading-relaxed">
+            支持分享链接、JSON 文件与剪贴板；导入的配置会先经过版本与字段校验，确认后才会应用。
+          </p>
+        </div>
       </div>
 
       <div className="p-4 border-t border-gray-800/50">

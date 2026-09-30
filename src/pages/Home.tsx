@@ -1,13 +1,17 @@
 import { useState } from 'react';
 import { KeyboardScene } from '@/components/Keyboard3D/KeyboardScene';
 import { ControlPanel } from '@/components/ControlPanel/ControlPanel';
+import { ImportDialog } from '@/components/Share/ImportDialog';
+import { Toasts } from '@/components/Share/Toasts';
 import { useKeyboardPress } from '@/hooks/useKeyboardPress';
+import { useConsumeShareUrlOnLoad } from '@/hooks/useConsumeShareUrlOnLoad';
 import { KeyZone } from '@/types/keyboard';
 
 export default function Home() {
   const [selectedZone, setSelectedZone] = useState<KeyZone | null>(null);
-  
+
   useKeyboardPress();
+  useConsumeShareUrlOnLoad();
 
   return (
     <div className="h-screen w-screen flex overflow-hidden bg-[#0a0a0f]">
@@ -28,7 +32,7 @@ export default function Home() {
           </div>
           <KeyboardScene selectedZone={selectedZone} />
         </div>
-        
+
         <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20">
           <div className="px-6 py-3 bg-gray-900/60 backdrop-blur-xl rounded-full border border-gray-700/30">
             <p className="text-sm text-gray-300 flex items-center gap-2">
@@ -50,13 +54,16 @@ export default function Home() {
           </div>
         </div>
       </div>
-      
+
       <div className="w-96 flex-shrink-0">
         <ControlPanel
           selectedZone={selectedZone}
           onZoneChange={setSelectedZone}
         />
       </div>
+
+      <ImportDialog />
+      <Toasts />
     </div>
   );
 }
