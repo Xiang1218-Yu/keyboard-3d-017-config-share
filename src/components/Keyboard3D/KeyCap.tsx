@@ -1,6 +1,7 @@
 import { useRef, useState, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { RoundedBox, Text } from '@react-three/drei';
+import type { ThreeEvent } from '@react-three/fiber';
 import * as THREE from 'three';
 import { KeyConfig } from '@/types/keyboard';
 import { useKeyboardStore, useIsKeyPressed } from '@/store/useKeyboardStore';
@@ -50,12 +51,12 @@ export function KeyCap({ keyConfig, selectedZone }: KeyCapProps) {
     }
   });
 
-  const handlePointerDown = (e: any) => {
+  const handlePointerDown = (e: ThreeEvent<PointerEvent>) => {
     e.stopPropagation();
     pressKey(keyConfig.id);
   };
 
-  const handlePointerUp = (e: any) => {
+  const handlePointerUp = (e: ThreeEvent<PointerEvent>) => {
     e.stopPropagation();
     releaseKey(keyConfig.id);
   };

@@ -1,5 +1,5 @@
 import { Palette, RotateCcw } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useZoneColors } from '@/store/useKeyboardStore';
 import { useKeyboardStore } from '@/store/useKeyboardStore';
 import { ZONE_LIST, ZONE_CONFIGS } from '@/data/zones';
@@ -11,11 +11,43 @@ interface ZoneColorPickerProps {
   onZoneChange: (zone: KeyZone | null) => void;
 }
 
+const HEX_COLOR_RE = /^#[0-9a-f]{6}$/i;
+const SHORT_HEX_COLOR_RE = /^#[0-9a-f]{3}$/i;
+
+function normalizeHexColor(value: string): string | null {
+  if (HEX_COLOR_RE.test(value)) return value.toLowerCase();
+  if (SHORT_HEX_COLOR_RE.test(value)) {
+    return `#${value
+      .slice(1)
+      .split('')
+      .map((char) => char + char)
+      .join('')}`.toLowerCase();
+  }
+  return null;
+}
+
 export function ZoneColorPicker({ selectedZone, onZoneChange }: ZoneColorPickerProps) {
   const zoneColors = useZoneColors();
   const setZoneColor = useKeyboardStore((state) => state.setZoneColor);
   const resetColors = useKeyboardStore((state) => state.resetColors);
-  const [customColor, setCustomColor] = useState('#3b82f6');
+  const [colorDraft, setColorDraft] = useState(zoneColors[selectedZone ?? 'alphanumeric'] ?? '#3b82f6');
+
+  useEffect(() => {
+    if (selectedZone) {
+      setColorDraft(zoneColors[selectedZone]);
+    }
+  }, [selectedZone, zoneColors]);
+
+  const commitDraftColor = () => {
+    if (!selectedZone) return;
+    const normalized = normalizeHexColor(colorDraft);
+    if (normalized) {
+      setZoneColor(selectedZone, normalized);
+      setColorDraft(normalized);
+      return;
+    }
+    setColorDraft(zoneColors[selectedZone]);
+  };
 
   const handleColorSelect = (color: string) => {
     if (selectedZone) {
@@ -25,9 +57,9 @@ export function ZoneColorPicker({ selectedZone, onZoneChange }: ZoneColorPickerP
 
   const handleCustomColorChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const color = e.target.value;
-    setCustomColor(color);
     if (selectedZone) {
       setZoneColor(selectedZone, color);
+      setColorDraft(color);
     }
   };
 
@@ -94,9 +126,19 @@ export function ZoneColorPicker({ selectedZone, onZoneChange }: ZoneColorPickerP
                   />
                   <input
                     type="text"
-                    value={zoneColors[selectedZone]}
-                    onChange={(e) => handleColorSelect(e.target.value)}
-                    className="flex-1 px-3 py-2 bg-gray-900/60 border border-gray-700/50 rounded-lg text-sm text-white font-mono focus:outline-none focus:border-purple-500/50"
+                    value={colorDraft}
+                    onChange={(e) => setColorDraft(e.target.value)}
+                    onBlur={commitDraftColor}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.currentTarget.blur();
+                      }
+                    }}
+                    className={`flex-1 px-3 py-2 bg-gray-900/60 border rounded-lg text-sm text-white font-mono focus:outline-none ${
+                      normalizeHexColor(colorDraft)
+                        ? 'border-gray-700/50 focus:border-purple-500/50'
+                        : 'border-red-500/60 focus:border-red-500'
+                    }`}
                   />
                 </div>
               </div>

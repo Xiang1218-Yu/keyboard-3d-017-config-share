@@ -26,9 +26,7 @@ const createKey = (
 
 const generate60Layout = (): KeyConfig[] => {
   const keys: KeyConfig[] = [];
-  const kw = 1;
   const kh = 1;
-  const gap = 0.05;
 
   const row0 = [
     { label: 'Esc', x: 0, w: 1, zone: 'function' as KeyZone, code: 'Escape' },
